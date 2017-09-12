@@ -16,6 +16,7 @@ if (isset($_POST["id"])) {
 
     if (!empty($id)) {
 
+
         $req = $db->prepare("DELETE FROM taches WHERE id = :id");
         $req->bindValue(":id", $id, PDO::PARAM_INT);
         if ($req->execute())

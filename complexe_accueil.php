@@ -53,10 +53,10 @@ try {
                 <h1 class="titre-box">Navigation</h1>
 
                 <div class="list-group">
-                    <a href="complexe_accueil?complexe=<?php echo $idComplexe; ?>" class="list-group-item">
+                    <a href="complexe_accueil?complexe=<?php echo $idComplexe; ?>" class="list-group-item active">
                         Le Complexe
                     </a>
-                    <a href="complexe_historique?complexe=<?php echo $idComplexe; ?>" class="list-group-item active">
+                    <a href="complexe_historique?complexe=<?php echo $idComplexe; ?>" class="list-group-item">
                         Historique
                     </a>
                     <a href="#" class="list-group-item disabled">
@@ -80,10 +80,40 @@ try {
         </div>
         <div class="col-md-9">
             <div class="box contour-gris grand" style="margin: 40px 0 70px;">
-                <h1 class="titre-box">Historique des intéractions</h1>
-                <div>
-                    <h3></h3>
+                <h1 class="titre-box" style="margin-bottom: 20px;">Informations du complexe</h1>
+                <div class="conteneur-info">
+                    <div class="row">
+                        <div class="col-md-3">Nom:</div>
+                        <div class="col-md-3"><strong><?php echo $complexe->getNom(); ?></strong></div>
+                        <div class="col-md-3">Adresse ligne 1:</div>
+                        <div class="col-md-3"><strong><?php echo $complexe->getCoordonnees()->getAdresseLigne1(); ?></strong></div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">E-mail:</div>
+                        <div class="col-md-3"><strong><?php echo $complexe->getCoordonnees()->getMail(); ?></strong></div>
+                        <div class="col-md-3">Adresse ligne 2::</div>
+                        <div class="col-md-3">
+                            <strong><?php
+                                $adresse_l2 = $complexe->getCoordonnees()->getAdresseLigne2();
+                                if (empty($adresse_l2)){ echo "[Vide]"; }else{ echo $adresse_l2; }
+                            ?></strong>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">N° telephone:</div>
+                        <div class="col-md-3"><strong><?php echo $complexe->getCoordonnees()->getTelephone(); ?></strong></div>
+                        <div class="col-md-3">Code Postal:</div>
+                        <div class="col-md-3"><strong><?php echo $complexe->getCoordonnees()->getCodePostal(); ?></strong></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">Nbr. Terrains:</div>
+                        <div class="col-md-3"><strong><?php echo count($complexe->getListeTerrains()); ?></strong></div>
+                        <div class="col-md-3">Ville:</div>
+                        <div class="col-md-3"><strong><?php echo $complexe->getCoordonnees()->getVille(); ?></strong></div>
+                    </div>
                 </div>
+                <hr class="separateur-info">
             </div>
         </div>
     </div>

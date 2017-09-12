@@ -69,33 +69,82 @@ if (!estConnecte())
             </form>
         </div>
 
-        <div id="liste-taches">
-            <?php foreach (getTaches() as $uneTache){ ?>
-            <div class="tache" id="t-<?php echo $uneTache[0]; ?>">
-                <div class="row">
-                    <div class="col-lg-1">
-                        <input type="checkbox" <?php if ($uneTache["fait"] == 1){ echo 'checked'; } ?> class="checkbox-tache" id="<?php echo $uneTache[0]; ?>">
-                    </div>
-                    <div class="col-lg-3 date-tache">
-                        Le: <strong><?php echo (new DateTime($uneTache["date"]))->format("d-m-Y"); ?></strong>
-                    </div>
-                    <div class="col-lg-8 descr-tache">
-                        <?php echo $uneTache["description"]; ?>
-                    </div>
-                </div>
-                <hr class="separateur-tache">
-                <div class="row petite-marge-top">
-                    <div class="col-lg-6">
-                        Posté par : <strong><?php echo $uneTache["user_client_id"]; ?></strong>
-                    </div>
-                    <div class="col-lg-3">
-                        <!--<button class="btn btn-warning grand"><span class="glyphicon glyphicon-ok"></span>  A Faire</button>-->
-                    </div>
-                    <div class="col-lg-3">
-                        <button class="btn btn-danger grand btn-suppr-tache" id="d-<?php echo $uneTache[0]; ?>"><span class="glyphicon glyphicon-trash"></span>  Supprimer</button>
+        <div class="row filtres-tache">
+            <div class="col-md-4">
+                <div class="checkbox">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="text" placeholder="Rechercher..." class="form-control">
+                        </div>
                     </div>
                 </div>
             </div>
+            <div class="col-md-2">
+                <div class="checkbox">
+                    <label>
+                        <input id="rec-task" type="checkbox" checked> Tâches à venir
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="checkbox">
+                    <label>
+                        <input id="anc-task" type="checkbox"> Anciennes taches
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="checkbox">
+                    <label>
+                        <input id="nofinish-task" type="checkbox" checked> Taches non-accomplies
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="checkbox">
+                    <label>
+                        <input id="finish-task" type="checkbox" checked> Tache accomplies
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div id="liste-taches">
+            <?php $taches = getTaches();
+            if (!empty($taches)) {
+                foreach ($taches as $uneTache) { ?>
+                    <div class="tache" id="t-<?php echo $uneTache[0]; ?>">
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <input type="checkbox" <?php if ($uneTache["fait"] == 1) {
+                                    echo 'checked';
+                                } ?> class="checkbox-tache" id="<?php echo $uneTache[0]; ?>">
+                            </div>
+                            <div class="col-lg-3 date-tache">
+                                Pour le: <strong><?php echo (new DateTime($uneTache["date"]))->format("d-m-Y"); ?></strong>
+                            </div>
+                            <div class="col-lg-8 descr-tache">
+                                <?php echo $uneTache["description"]; ?>
+                            </div>
+                        </div>
+                        <hr class="separateur-tache">
+                        <div class="row petite-marge-top">
+                            <div class="col-lg-6">
+                                Posté par : <strong><?php echo $uneTache["user_client_id"]; ?></strong>
+                            </div>
+                            <div class="col-lg-3">
+                                <!--<button class="btn btn-warning grand"><span class="glyphicon glyphicon-ok"></span>  A Faire</button>-->
+                            </div>
+                            <div class="col-lg-3">
+                                <button class="btn btn-danger grand btn-suppr-tache" id="d-<?php echo $uneTache[0]; ?>">
+                                    <span class="glyphicon glyphicon-trash"></span> Supprimer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                <?php }
+            }else{ ?>
+                <h3>Pas de tâches en ce moment.</h3>
             <?php } ?>
         </div>
 
@@ -149,12 +198,25 @@ if (!estConnecte())
        })
     });
 
+    $(".checkbox").change(function () {
+        var recentes = $("#rec-task").prop("checked");
+        var anciennes = $("#anc-task").prop("checked");
+        var nofinished = $("#nofinish-task").prop("checked");
+        var finished = $("#finish-task").prop("checked");
+        $.post("ajax/search_tache.php", {recentes:recentes, anciennes:anciennes, nofinished:nofinished, finished:finished}, function (data) {
+            $("#liste-taches").html(data);
+            $("html").niceScroll();
+        });
+    });
+
     $(".btn-suppr-tache").click(function () {
        var id = $(this).attr("id").substr(2);
        $.post("ajax/supprimer_tache.php", {id:id}, function (data) {
            if (data === "ok") {
                fadeAction("La tâche à bien été supprimée", true);
                $("#t-" + id).remove();
+               if ($(".tache").length === 0)
+                    $("#liste-taches").html("<h3>Pas de tâches à pour le moment.</h3>").slideDown();
            }else
                fadeAction("La tâche n'a pas pu être supprimée", false);
        });

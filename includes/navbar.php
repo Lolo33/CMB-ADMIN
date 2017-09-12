@@ -13,7 +13,12 @@
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="accueil.php">Accueil<span class="sr-only">(current)</span></a></li>
+                <li <?php activeMenuIfContain("/accueil"); ?>>
+                    <a href="accueil.php">Accueil<span class="sr-only">(current)</span></a>
+                </li>
+                <li <?php activeMenuIfContain("/ajout_complexe"); ?>>
+                    <a href="ajout_complexe.php">Ajouter un complexe<span class="sr-only">(current)</span></a>
+                </li>
 
                 <!--<li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
@@ -29,16 +34,29 @@
                 </li>-->
             </ul>
 
-            <form class="navbar-form navbar-left" method="post" action="complexe_historique" role="search">
+            <form class="navbar-form navbar-left" method="get" action="complexe_accueil" role="search">
                 <div class="form-group">
                     <select name="complexe" class="form-control" id="select-complexe">
-                        <option selected readonly>Choisir un complexe</option>
                         <?php
                         try {
                             $listeComplexes = $CmbApi->ComplexesAction->GetAll();
+                            $countSelect = 0;
                             foreach ($listeComplexes as $unComplexe) {
-                                echo '<option value=""' . $unComplexe->getId() . '" id="' . $unComplexe->getId() . '">' . $unComplexe->getNom() . '</option>';
+                                $countSelect++;
+                                $selected = "";
+                                $class = "";
+                                if (isset($_GET["complexe"]) && !empty($_GET["complexe"])){
+                                    $idComplexe = htmlspecialchars(trim($_GET["complexe"]));
+                                    if ($idComplexe == $unComplexe->getId()){
+                                        $selected = "selected";
+                                        $class = "bold";
+                                        $countSelect--;
+                                    }
+                                }
+                                echo '<option '.$selected.' class="'.$class.'" value="' . $unComplexe->getId() . '" id="' . $unComplexe->getId() . '">' . $unComplexe->getNom() . '</option>';
                             }
+                            if ($countSelect == count($listeComplexes))
+                                echo '<option readonly selected>Choisir un complexe</option>';
                         }catch(\CmbSdk\Exceptions\ReponseException $ex){
                             echo "Erreur de réponse HTTP: " . $e->getReponse() . "<br />" .
                                 "Message : " . $e->getMessage();

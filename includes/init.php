@@ -50,5 +50,6 @@ function getTaches(){
     $db = getConnexion();
     $req = $db->query("SELECT * FROM taches INNER JOIN utilisateur_api ON taches.utilisateur_id = utilisateur_api.id WHERE taches.date >= DATE( NOW() ) ORDER BY taches.date");
     $req->execute();
-    return $rep = $req->fetchAll();
+    $rep = $req->fetchAll();
+    return $rep;
 }
