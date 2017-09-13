@@ -69,12 +69,13 @@ if (!estConnecte())
             </form>
         </div>
 
+        <h5 style="margin-top: 40px;">Filtres</h5>
         <div class="row filtres-tache">
             <div class="col-md-4">
                 <div class="checkbox">
                     <div class="form-group">
                         <div class="input-group">
-                            <input type="text" placeholder="Rechercher..." class="form-control">
+                            <input type="text" placeholder="Rechercher..." id="inputSearch" class="form-control">
                         </div>
                     </div>
                 </div>
@@ -162,13 +163,13 @@ if (!estConnecte())
             form.show();
             $("#fleche-add").css("visibility", "visible");
             $(this).removeClass("btn-success").addClass("btn-default");
-            $("html").niceScroll();
         }else {
             form.hide();
             $("#fleche-add").css("visibility", "hidden");
             $(this).removeClass("btn-default").addClass("btn-success");
-            $("body").niceScroll();
         }
+        $("html").niceScroll();
+        $("body").niceScroll();
     });
 
     $("#form-tache").submit(function (e) {
@@ -198,12 +199,25 @@ if (!estConnecte())
        })
     });
 
+
+    $("#inputSearch").keyup(function () {
+        var recentes = $("#rec-task").prop("checked");
+        var anciennes = $("#anc-task").prop("checked");
+        var nofinished = $("#nofinish-task").prop("checked");
+        var finished = $("#finish-task").prop("checked");
+        var descr = $("#inputSearch").val();
+        $.post("ajax/search_tache.php", {recentes:recentes, anciennes:anciennes, nofinished:nofinished, finished:finished, search:descr}, function (data) {
+            $("#liste-taches").html(data);
+            $("html").niceScroll();
+        });
+    });
     $(".checkbox").change(function () {
         var recentes = $("#rec-task").prop("checked");
         var anciennes = $("#anc-task").prop("checked");
         var nofinished = $("#nofinish-task").prop("checked");
         var finished = $("#finish-task").prop("checked");
-        $.post("ajax/search_tache.php", {recentes:recentes, anciennes:anciennes, nofinished:nofinished, finished:finished}, function (data) {
+        var descr = $("#inputSearch").val();
+        $.post("ajax/search_tache.php", {recentes:recentes, anciennes:anciennes, nofinished:nofinished, finished:finished, search:descr}, function (data) {
             $("#liste-taches").html(data);
             $("html").niceScroll();
         });

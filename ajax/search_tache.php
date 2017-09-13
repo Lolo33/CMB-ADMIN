@@ -9,12 +9,13 @@
 include '../includes/init.php';
 $db = getConnexion();
 
-if (isset($_POST["recentes"]) && isset($_POST["anciennes"]) && isset($_POST["nofinished"]) && isset($_POST["finished"])){
+if (isset($_POST["recentes"]) && isset($_POST["anciennes"]) && isset($_POST["nofinished"]) && isset($_POST["finished"]) && isset($_POST["search"])){
 
     $recentes = htmlspecialchars(trim($_POST["recentes"]));
     $anciennes = htmlspecialchars(trim($_POST["anciennes"]));
     $no_finished = htmlspecialchars(trim($_POST["nofinished"]));
     $finished = htmlspecialchars(trim($_POST["finished"]));
+    $search = htmlspecialchars(trim($_POST["search"]));
 
     $date = "";
     $etat = "";
@@ -30,7 +31,7 @@ if (isset($_POST["recentes"]) && isset($_POST["anciennes"]) && isset($_POST["nof
                 $date = "taches.date < DATE( NOW() )";
         }
     }
-    if ($no_finished == "false" && $finished == "false)"){
+    if ($no_finished == "false" && $finished == "false"){
         echo "<h3>Pas de tâches à pour le moment.</h3>";
         die();
     }else {
@@ -42,17 +43,33 @@ if (isset($_POST["recentes"]) && isset($_POST["anciennes"]) && isset($_POST["nof
         }
     }
 
-    if ($etat != "" && $date != ""){
-        $fin_requete = "WHERE " . $date . " AND " . $etat;
-    }elseif ($date == "" && $etat != ""){
-        $fin_requete = "WHERE " . $etat;
-    }elseif ($etat == "" && $date != ""){
-        $fin_requete = "WHERE " . $date;
-    }else{
-        $fin_requete = "";
+    if ($search != "") {
+        $search = "'%" . $search . "%'";
+        $fin_requete = "WHERE (taches.date LIKE ".$search." OR taches.description LIKE ".$search . ") ";
+        if ($etat != "" && $date != ""){
+            $fin_requete .= "AND " . $date . " AND " . $etat;
+        }elseif ($date == "" && $etat != ""){
+            $fin_requete .= "AND " . $etat;
+        }elseif ($etat == "" && $date != ""){
+            $fin_requete .= "AND " . $date;
+        }elseif ($etat == "" && $date == "" && $search == "''"){
+            $fin_requete = " ";
+        }
+    }else {
+        $search = "''";
+        $fin_requete = "WHERE ";
+        if ($etat != "" && $date != ""){
+            $fin_requete .= $date . " AND " . $etat;
+        }elseif ($date == "" && $etat != ""){
+            $fin_requete .= $etat;
+        }elseif ($etat == "" && $date != ""){
+            $fin_requete .= $date;
+        }elseif ($etat == "" && $date == "" && $search == "''"){
+            $fin_requete = " ";
+        }
     }
 
-    $req = $db->query("SELECT * FROM taches INNER JOIN utilisateur_api ON taches.utilisateur_id = utilisateur_api.id " . $fin_requete );
+    $req = $db->query("SELECT * FROM taches INNER JOIN utilisateur_api ON taches.utilisateur_id = utilisateur_api.id " . $fin_requete . " ORDER BY taches.date");
     $req->execute();
     if ($req->rowCount() == 0){
         echo "<h3>Pas de tâches à pour le moment.</h3>";
