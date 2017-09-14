@@ -53,3 +53,28 @@ function getTaches(){
     $rep = $req->fetchAll();
     return $rep;
 }
+
+function getEchangeType() {
+    $db = getConnexion();
+    $req = $db->query("SELECT * FROM echange_type;");
+    $req->execute();
+    return $req->fetchAll();
+}
+
+function getEchanges($id_complexe){
+    $db = getConnexion();
+    $req = $db->prepare("SELECT * FROM echange INNER JOIN echange_type ON echange.type_id = echange_type.id WHERE complexe_id = :id ORDER BY echange.date DESC");
+    $req->bindValue(":id", $id_complexe, PDO::PARAM_INT);
+    $req->execute();
+    return $req->fetchAll();
+}
+
+function exist($table, $champ, $valeur){
+    $db = getConnexion();
+    $req = $db->prepare("SELECT * FROM " . $table . " WHERE ".$champ." = :valeur");
+    $req->bindValue(":valeur", $valeur, PDO::PARAM_STR);
+    $req->execute();
+    if ($req->rowCount() > 0)
+        return true;
+    return false;
+}

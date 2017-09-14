@@ -4,10 +4,10 @@
 function fadeAction(message, reussite) {
     var action_info = $("#action-info");
     if (reussite === true) {
-        action_info.html('<span class="glyphicon glyphicon-ok"></span> ' + message);
+        action_info.html('<span class="glyphicon glyphicon-ok-circle"></span> ' + message);
         action_info.removeClass("fail").addClass("success");
     }else {
-        action_info.html('<span class="glyphicon glyphicon-remove"></span> ' + message);
+        action_info.html('<span class="glyphicon glyphicon-ban-circle"></span> ' + message);
         action_info.removeClass("success").addClass("fail");
     }
     action_info.fadeIn(1000);

@@ -1,4 +1,3 @@
-<?php include "api_conf.php"; ?>
 <nav class="navbar navbar-default">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -14,10 +13,10 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li <?php activeMenuIfContain("/accueil"); ?>>
-                    <a href="accueil.php">Accueil<span class="sr-only">(current)</span></a>
+                    <a href="accueil.php"><span class="glyphicon glyphicon-home"></span> Accueil<span class="sr-only">(current)</span></a>
                 </li>
                 <li <?php activeMenuIfContain("/ajout_complexe"); ?>>
-                    <a href="ajout_complexe.php">Ajouter un complexe<span class="sr-only">(current)</span></a>
+                    <a href="ajout_complexe.php"><span class="glyphicon glyphicon-plus-sign"></span> Ajouter un complexe<span class="sr-only">(current)</span></a>
                 </li>
 
                 <!--<li class="dropdown">

@@ -31,6 +31,13 @@ body {
 .align-right {
     text-align: right;
 }
+.form-complexe {
+    width: 90%;
+    margin: 40px auto;
+}
+.input-complexe {
+    height: 50px;
+}
 .marge-top {
     margin-top: 50px;
 }
@@ -72,11 +79,13 @@ body {
 .interaction {
     padding: 20px;
     margin-top: 20px;
+    width: 90%;
 }
 .exp-complexe {
     background: #dcdce5;
 }
 .exp-moi {
+
     background: #e5c6a2;
 }
 

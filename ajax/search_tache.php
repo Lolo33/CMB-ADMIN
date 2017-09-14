@@ -69,7 +69,7 @@ if (isset($_POST["recentes"]) && isset($_POST["anciennes"]) && isset($_POST["nof
         }
     }
 
-    $req = $db->query("SELECT * FROM taches INNER JOIN utilisateur_api ON taches.utilisateur_id = utilisateur_api.id " . $fin_requete . " ORDER BY taches.date");
+    $req = $db->query("SELECT * FROM taches INNER JOIN utilisateur_api ON taches.utilisateur_id = utilisateur_api.id " . $fin_requete . " ORDER BY taches.date, fait");
     $req->execute();
     if ($req->rowCount() == 0){
         echo "<h3>Pas de tâches à pour le moment.</h3>";

@@ -23,23 +23,25 @@ else
 <!DOCTYPE html>
 <html>
 <head>
-    <?php include "includes/head.php"; ?>
-    <title>Administration ConnectMyBooking API - Accueil</title>
+    <?php include "includes/head.php";
+    $complexe = new \CmbSdk\ClassesMetiers\Complexe();
+    try {
+        $complexe = $CmbApi->ComplexesAction->Get($idComplexe);
+    }catch(\CmbSdk\Exceptions\ReponseException $ex){
+        echo "<script>
+                alert(\"Erreur de réponse HTTP: " . $ex->getReponse() . "\\n" . $ex->getMessage() . "\");
+                document.location.replace('accueil.php');
+            </script>";
+        //header("Location: accueil.php");
+    }
+    ?>
+    <title>Administration ConnectMyBooking API - <?php echo $complexe->getNom(); ?> - Informations</title>
     <style>
     </style>
 </head>
 <body>
 
-<?php include "includes/navbar.php";
-$complexe = new \CmbSdk\ClassesMetiers\Complexe();
-try {
-    $complexe = $CmbApi->ComplexesAction->Get($idComplexe);
-}catch(\CmbSdk\Exceptions\ReponseException $ex){
-    echo "Erreur de réponse HTTP: " . $e->getReponse() . "<br />" .
-        "Message : " . $e->getMessage();
-    header("Location: accueil.php");
-}
-?>
+<?php include "includes/navbar.php"; ?>
 
 <div class="container-fluid">
 
@@ -87,7 +89,6 @@ try {
                         <div class="col-md-3"><strong><?php echo $complexe->getNom(); ?></strong></div>
                         <div class="col-md-3">Adresse ligne 1:</div>
                         <div class="col-md-3"><strong><?php echo $complexe->getCoordonnees()->getAdresseLigne1(); ?></strong></div>
-
                     </div>
                     <div class="row">
                         <div class="col-md-3">E-mail:</div>
