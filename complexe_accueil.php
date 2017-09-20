@@ -25,8 +25,10 @@ else
 <head>
     <?php include "includes/head.php";
     $complexe = new \CmbSdk\ClassesMetiers\Complexe();
+    $complexe_bdd = null;
     try {
         $complexe = $CmbApi->ComplexesAction->Get($idComplexe);
+        $complexe_bdd = getComplexe($idComplexe);
     }catch(\CmbSdk\Exceptions\ReponseException $ex){
         echo "<script>
                 alert(\"Erreur de réponse HTTP: " . $ex->getReponse() . "\\n" . $ex->getMessage() . "\");
@@ -34,6 +36,11 @@ else
             </script>";
         //header("Location: accueil.php");
     }
+    $systeme = $complexe_bdd["systeme_resa_id"];
+    if ($systeme == null)
+        $systeme = "<span class='red'>[NON]</span>";
+    else
+        $systeme = '<span class="blue">' . getSystemeResa($systeme)["nom"] . '</span>';
     ?>
     <title>Administration ConnectMyBooking API - <?php echo $complexe->getNom(); ?> - Informations</title>
     <style>
@@ -51,38 +58,11 @@ else
 
     <div class="row" style="margin: 0 50px;">
         <div class="col-md-3">
-            <div class="box contour-gris grand" id="nav-tool" style="margin: 40px 0 70px;">
-                <h1 class="titre-box">Navigation</h1>
-
-                <div class="list-group">
-                    <a href="complexe_accueil?complexe=<?php echo $idComplexe; ?>" class="list-group-item active">
-                        Le Complexe
-                    </a>
-                    <a href="complexe_historique?complexe=<?php echo $idComplexe; ?>" class="list-group-item">
-                        Historique
-                    </a>
-                    <a href="#" class="list-group-item disabled">
-                        Documents
-                    </a>
-                    <a href="#" class="list-group-item disabled">
-                        Réservations
-                    </a>
-                    <a href="#" class="list-group-item disabled">
-                        Plages horaires
-                    </a>
-                    <a href="#" class="list-group-item disabled">
-                        Tarifs
-                    </a>
-                    <a href="#" class="list-group-item disabled">
-                        Comissions
-                    </a>
-                </div>
-
-            </div>
+            <?php include "complexe_navigation.php"; ?>
         </div>
         <div class="col-md-9">
             <div class="box contour-gris grand" style="margin: 40px 0 70px;">
-                <h1 class="titre-box" style="margin-bottom: 20px;">Informations du complexe</h1>
+                <h1 class="titre-box" style="margin-bottom: 40px;">Informations du complexe</h1>
                 <div class="conteneur-info">
                     <div class="row">
                         <div class="col-md-3">Nom:</div>
@@ -115,6 +95,26 @@ else
                     </div>
                 </div>
                 <hr class="separateur-info">
+                <div class="conteneur-info">
+                    <div class="row">
+                        <div class="col-md-3">Site du complexe :</div>
+                        <div class="col-md-9">
+                            <strong>
+                                <?php if (!empty($complexe_bdd["site"])) {
+                                    echo '<a target="_blank" href="'.$complexe_bdd['site'].'">'.$complexe_bdd["site"].'</a>';
+                                }else {
+                                    echo "[Pas de site]";
+                                } ?>
+                            </strong>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">Système de réservation:</div>
+                        <div class="col-md-3"><strong><?php echo $systeme; ?></strong></div>
+                        <div class="col-md-3">Client CMB:</div>
+                        <div class="col-md-3"><strong><?php if ($complexe_bdd["is_client_cmb"] == 1){ echo "<span class='green'>[OUI]</span>"; }else{ echo "<span class='red'>[NON]</span>"; }  ?></strong></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

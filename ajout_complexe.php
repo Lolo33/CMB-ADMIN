@@ -58,6 +58,24 @@ if (isset($_GET["complexe"]) && !empty($_GET["complexe"])) {
                 <div class="form-group">
                     <input class="form-control input-complexe" type="tel" id="inputTelephone" placeholder="Numéro de télephone *" />
                 </div>
+                <div class="form-group">
+                    <input class="form-control input-complexe" type="url" id="inputURL" placeholder="URL du site du complexe (https://example.fr)" />
+                </div>
+
+                <div class="form-group">
+                    <select class="form-control input-complexe" id="inputSystemeResa" >
+                        <option value="null">Pas de système de réservation</option>
+                        <?php foreach (getListeSystemeResa() as $unSysteme){ ?>
+                            <option value="<?php echo $unSysteme["id"]; ?>"><?php echo $unSysteme["nom"]; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+
+                <div class="checkbox">
+                    <label>
+                        <input id="chkClientCmb" type="checkbox"> Client ConnectMyBooking
+                    </label>
+                </div>
 
                 <div class="form-group align-right">
                     <button type="reset" class="btn btn-default">Annuler</button>
@@ -117,7 +135,10 @@ if (isset($_GET["complexe"]) && !empty($_GET["complexe"])) {
             var ville = $("#inputVille").val();
             var mail = $("#inputMail").val();
             var tel = $("#inputTelephone").val();
-            $.post("ajax/ajouter_complexe.php", {nom:nom, adresseL1:adresseL1, adresseL2:adresseL2, cp:cp, ville:ville, mail:mail, tel:tel}, function (data) {
+            var systeme = $("#inputSystemeResa").val();
+            var is_client = $("#chkClientCmb").prop("checked");
+            var url = $("#inputURL").val();
+            $.post("ajax/ajouter_complexe.php", {nom:nom, adresseL1:adresseL1, adresseL2:adresseL2, cp:cp, ville:ville, mail:mail, tel:tel, systeme:systeme, url:url, is_client:is_client}, function (data) {
                 if (data.indexOf("ok-") !== -1) {
                     fadeAction("Vous avez bien ajouté ce complexe", true);
                     form.hide();

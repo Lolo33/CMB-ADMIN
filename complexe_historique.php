@@ -44,97 +44,44 @@ else
 
     <div class="row" style="margin: 0 50px;">
         <div class="col-md-3">
-            <div class="box contour-gris grand" id="nav-tool" style="margin: 40px 0 70px;">
-                <h1 class="titre-box">Navigation</h1>
-
-                <div class="list-group">
-                    <a href="complexe_accueil?complexe=<?php echo $idComplexe; ?>" class="list-group-item">
-                        Le Complexe
-                    </a>
-                    <a href="complexe_historique?complexe=<?php echo $idComplexe; ?>" class="list-group-item active">
-                        Historique
-                    </a>
-                    <a href="#" class="list-group-item disabled">
-                        Documents
-                    </a>
-                    <a href="#" class="list-group-item disabled">
-                        Réservations
-                    </a>
-                    <a href="#" class="list-group-item disabled">
-                        Plages horaires
-                    </a>
-                    <a href="#" class="list-group-item disabled">
-                        Tarifs
-                    </a>
-                    <a href="#" class="list-group-item disabled">
-                        Comissions
-                    </a>
-                </div>
-
-            </div>
+            <?php include "complexe_navigation.php"; ?>
         </div>
         <div class="col-md-9">
             <div class="box contour-gris grand" style="margin: 40px 0 70px;">
-                <h1 class="titre-box">Historique des intéractions</h1>
+                <h1 class="titre-box">Historique de navigation du complexe</h1>
 
-                <div class="ajout-interaction">
-                    <form id="form-interaction">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <select id="inputInit" class="form-control">
-                                    <optgroup label="Initiateur de l'échange">
-                                        <option value="0">Moi</option>
-                                        <option value="1">Le Complexe</option>
-                                    </optgroup>
-                                </select>
-                                <select id="inputType" class="form-control">
-                                    <optgroup label="Type d'échange">
-                                        <?php foreach (getEchangeType() as $unType){ ?>
-                                            <option value="<?php echo $unType["id"]; ?>"><?php echo $unType["typeNom"]; ?></option>
-                                        <?php } ?>
-                                    </optgroup>
-                                </select>
+                <?php $liste_navig = getHistorique($idComplexe);
+                if (count($liste_navig) > 0) {
+                    $liste_temps_passe = [];
+                    foreach ($liste_navig as $item)
+                        if ($item["fin_visite"] != null)
+                            $liste_temps_passe[] = (new DateTime($item["debut_visite"]))->diff(new DateTime($item["fin_visite"])); ?>
+                    <h3>Temps total passé sur le site : <strong><?php echo format_heure(calculerTempsTotal($liste_temps_passe)); ?></strong></h3>
+                    <div id="liste-navig">
+                    <?php foreach ($liste_navig as $unePage) { ?>
+                        <div class="row" style="background: #f5f5f5;margin-bottom: 5px; padding: 5px;">
+                            <div class="col-lg-3">
+                                <?php
+                                echo "Le " . (new DateTime($unePage["debut_visite"]))->format("d-m-Y");
+                                if ($unePage["fin_visite"] == null) {
+                                    echo " <span class='red bold'>Fin de visite</span>";
+                                } else {
+                                    $temps = (new DateTime($unePage["debut_visite"]))->diff(new DateTime($unePage["fin_visite"]));
+                                    echo " [<strong>" . format_heure($temps->h . ":" . $temps->i . ":" . $temps->s) . "</strong>] ";
+                                } ?>
                             </div>
-                            <div class="col-md-8">
-                                <textarea id="inputResume" class="form-control" rows="3" placeholder="Résumé de l'échange..."></textarea>
+                            <div class="col-lg-6">
+                                <?php echo $unePage["url"]; ?>
+                            </div>
+                            <div class="col-lg-3">
+                                <?php echo $unePage["ip"]; ?>
                             </div>
                         </div>
-                        <div class="form-group align-right petite-marge-top">
-                            <button type="reset" class="btn btn-default">Annuler</button>
-                            <button type="submit" class="btn btn-success">Ajouter à la liste des intéractions</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div id="liste-interactions">
-                    <?php $listeEchanges = getEchanges($idComplexe);
-                    if (count($listeEchanges) > 0){
-                        foreach ($listeEchanges as $unEchange){
-                            if ($unEchange["initiateur"] == 0){ $align = ""; $class = "exp-moi"; $init = "Moi"; }else{ $align = "margin-left: 10%;"; $class = "exp-complexe"; $init = "Complexe"; }?>
-                            <div class="grand" style="<?php echo $align; ?>">
-                                <div class="interaction <?php echo $class; ?>">
-                                    <div class="row">
-                                        <div class="col-md-1">
-                                            <img src="img/<?php echo $unEchange["typeImg"]; ?>">
-                                        </div>
-                                        <div class="col-md-2">
-                                            <?php echo $init; ?>
-                                        </div>
-                                        <div class="col-md-2">
-                                            Le <strong><?php echo (new DateTime($unEchange["date"]))->format("d-m-Y"); ?></strong>
-                                        </div>
-                                        <div class="col-md-7">
-                                            <?php echo $unEchange["resume"]; ?>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                    <?php }
-                    }else{ ?>
-                        <h3>Pas d'échanges avec ce complexe pour le moment</h3>
                     <?php } ?>
-                    <!---->
-                </div>
+                    </div>
+                <?php }else{ ?>
+                    <h3 style="margin-top: 40px;">Ce complexe n'a pas encore navigué sur son espace dédié.</h3>
+                <?php } ?>
             </div>
         </div>
     </div>
@@ -144,19 +91,6 @@ else
 <div id="action-info"></div>
 
 <script>
-    $("#form-interaction").submit(function (e) {
-        e.preventDefault();
-        var resume = $("#inputResume").val();
-        var initiateur = $("#inputInit").val();
-        var type = $("#inputType").val();
-        $.post("ajax/ajout_echange.php?complexe=<?php echo $idComplexe; ?>", {resume:resume, init:initiateur, type:type}, function (data) {
-            if (data === "ok") {
-                fadeAction("Vous avez bien ajouté cette intéraction à la liste.", true);
-                location.reload();
-            }else
-                fadeAction(data, false);
-        })
-    })
 </script>
 
 <?php include "includes/script_bas_page.php"; ?>

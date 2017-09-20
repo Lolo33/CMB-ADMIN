@@ -26,17 +26,25 @@ class CmbApi extends Requetes
     public $PlanningComissionAction;
     public $ReservationsAction;
 
-    private $modeProduction = false;
+    private $modeProduction;
+
+    const MODE_PROD = true;
+    const MODE_TEST = false;
+    const MODE_LOCAL = null;
 
     const URL_PROD = "http://api.connectmybooking.com";
     const URL_TEST = "http://test.api.connectmybooking.com";
+    const URL_LOCAL = "http://localhost/api/web/app_dev.php";
 
-    public function __construct($api_key)
+    public function __construct($mode_prod, $api_key)
     {
+        $this->modeProduction = $mode_prod;
         if ($this->modeProduction === true)
             $url = CmbApi::URL_PROD;
-        else
+        elseif ($this->modeProduction === false)
             $url = CmbApi::URL_TEST;
+        else
+            $url = CmbApi::URL_LOCAL;
         parent::__construct($url, $api_key);
         $this->UtilisateursAction = new ActionsUtilisateurs($url . Routes::URL_USER, $api_key, $this->modeProduction);
         $this->TokensAction = new ActionsTokens(Routes::URL_TOKEN, $api_key, $this->modeProduction);

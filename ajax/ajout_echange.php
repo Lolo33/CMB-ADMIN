@@ -15,7 +15,7 @@ if (isset($_GET["complexe"])) {
 
     if (isset($_POST["resume"]) && isset($_POST["init"]) && isset($_POST["type"])) {
 
-        $resume = htmlspecialchars(trim($_POST["resume"]));
+        $resume = nl2br(htmlspecialchars(trim($_POST["resume"])));
         $init = htmlspecialchars(trim($_POST["init"]));
         $type = htmlspecialchars(trim($_POST["type"]));
 

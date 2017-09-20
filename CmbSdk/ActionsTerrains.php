@@ -27,10 +27,12 @@ class ActionsTerrains extends Actions
      */
     public function GetAllFromComplexe($id_complexe){
         $url = $this->url;
-        if ($this->modeProduction)
+        if ($this->modeProduction === true)
+            $url_base = CmbApi::URL_PROD;
+        elseif ($this->modeProduction === false)
             $url_base = CmbApi::URL_TEST;
         else
-            $url_base = CmbApi::URL_PROD;
+            $url_base = CmbApi::URL_LOCAL;
         $this->url = $url_base . Routes::URL_COMPLEXES . "/" . $id_complexe . Routes::URL_TERRAINS;
         $tab_reponse = [];
         $aray_json = json_decode($this->sendGetRequest());

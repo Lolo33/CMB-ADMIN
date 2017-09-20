@@ -1,0 +1,21 @@
+.fond-gris {
+    background: #f5f5f5;
+}
+.txt-gris {
+    color: #f5f5f5;
+}
+
+.fond-vert-clair {
+    background: #6BBA70;
+}
+.txt-vert-clair {
+    color: #6BBA70;
+}
+
+.fond-vert-pale {
+    background: #d0e8d7;
+}
+
+h3 {
+    font-family: "Raleway", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}

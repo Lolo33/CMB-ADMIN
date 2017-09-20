@@ -24,6 +24,7 @@ if (!estConnecte())
 
 <div class="container-fluid">
 
+
     <div class="box contour-gris moyen" style="margin: 40px auto 70px;">
         <h1 class="titre-box">Liste des tâches à effectuer</h1>
 
@@ -56,8 +57,44 @@ if (!estConnecte())
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-8">
-                        <h5>La date saisie doit être au format dd-mm-yyyy.</h5>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <select class="form-control" id="inputCategorie">
+                                <?php
+                                $listeCategories = getTachesCategories();
+                                if (count($listeCategories) > 0) {
+                                    foreach ($listeCategories as $uneCategorie) { ?>
+                                        <option value="<?php echo $uneCategorie["id"]; ?>"><?php echo $uneCategorie["cat_nom"]; ?></option>
+                                    <?php }
+                                }?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <select class="form-control" id="inputComplexe">
+                                <option value="null">Aucun complexe relié</option>
+                                <?php
+                                if (count($listeComplexes) > 0) {
+                                    foreach ($listeComplexes as $unComplexe) { ?>
+                                        <option value="<?php echo $unComplexe->getId(); ?>"><?php echo $unComplexe->getNom(); ?></option>
+                                    <?php }
+                                }?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            <select class="form-control" id="inputType">
+                                <?php
+                                $listeTypes = getEchangesTypes();
+                                if (count($listeTypes) > 0) {
+                                    foreach ($listeTypes as $unType) { ?>
+                                        <option value="<?php echo $unType["id"]; ?>"><?php echo $unType["typeNom"] ?></option>
+                                    <?php }
+                                }?>
+                            </select>
+                        </div>
                     </div>
                     <div class="col-lg-4">
                         <div class="form-group align-right">
@@ -90,7 +127,7 @@ if (!estConnecte())
             <div class="col-md-2">
                 <div class="checkbox">
                     <label>
-                        <input id="anc-task" type="checkbox"> Anciennes taches
+                        <input id="anc-task" type="checkbox" checked> Anciennes taches
                     </label>
                 </div>
             </div>
@@ -110,46 +147,71 @@ if (!estConnecte())
             </div>
         </div>
 
-        <div id="liste-taches">
-            <?php $taches = getTaches();
-            if (!empty($taches)) {
-                foreach ($taches as $uneTache) { ?>
-                    <div class="tache" id="t-<?php echo $uneTache[0]; ?>">
-                        <div class="row">
-                            <div class="col-lg-1">
-                                <input type="checkbox" <?php if ($uneTache["fait"] == 1) {
-                                    echo 'checked';
-                                } ?> class="checkbox-tache" id="<?php echo $uneTache[0]; ?>">
-                            </div>
-                            <div class="col-lg-3 date-tache">
-                                Pour le: <strong><?php echo (new DateTime($uneTache["date"]))->format("d-m-Y"); ?></strong>
-                            </div>
-                            <div class="col-lg-8 descr-tache">
-                                <?php echo $uneTache["description"]; ?>
-                            </div>
-                        </div>
-                        <hr class="separateur-tache">
-                        <div class="row petite-marge-top">
-                            <div class="col-lg-6">
-                                Posté par : <strong><?php echo $uneTache["user_client_id"]; ?></strong>
-                            </div>
-                            <div class="col-lg-3">
-                                <!--<button class="btn btn-warning grand"><span class="glyphicon glyphicon-ok"></span>  A Faire</button>-->
-                            </div>
-                            <div class="col-lg-3">
-                                <button class="btn btn-danger grand btn-suppr-tache" id="d-<?php echo $uneTache[0]; ?>">
-                                    <span class="glyphicon glyphicon-trash"></span> Supprimer
-                                </button>
-                            </div>
+        <?php
+        $listeTache = getTaches();
+        afficherListeTache($listeTache); ?>
+
+    </div>
+
+
+    <div class="box contour-gris moyen" style="margin: 40px auto 70px;">
+        <h1 class="titre-box">Liste des complexes sportifs</h1>
+        <div class="search-complexe">
+            <div class="row">
+                <div class="col-md-4">
+                    <input type="text" placeholder="Rechercher un complexe..." class="form-control" id="inputSearchComplexe"/>
+                </div>
+                <div class="col-md-2">
+                    <label>
+                        <input id="c-client" type="checkbox" checked> Déja client
+                    </label>
+                </div>
+                <div class="col-md-2">
+                    <label>
+                        <input id="c-site" type="checkbox" checked> Avec site
+                    </label>
+                </div>
+                <div class="col-md-2">
+                    <label>
+                        <input id="c-resa" type="checkbox" checked> Avec système de résa
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="row" id="liste-complexes">
+            <?php $page = 0;
+            if (count($listeComplexes) > 0) {
+                $parPage = 10;
+                foreach ($listeComplexes as $k => $unComplexe) {
+                    $compte = $k;
+                    if ($compte % $parPage === 0){
+                        $page += 1;
+                    }?>
+                    <div class="col-md-6 complexe pagin page-<?php echo $page; ?>">
+                        <div class="contenu-complexe">
+                            <strong><a href="complexe_accueil.php?complexe=<?php echo $unComplexe->getId(); ?>">
+                                <?php echo $unComplexe->getNom(); ?>
+                            </a></strong><br />
+                            <?php echo $unComplexe->getCoordonnees()->getVille(); ?>
                         </div>
                     </div>
                 <?php }
-            }else{ ?>
-                <h3>Pas de tâches en ce moment.</h3>
-            <?php } ?>
+            }?>
+            <div class="text-center pagin-color">
+                <ul class="pagination" style="background: #f5f5f5;">
+                    <?php for ($i=1; $i<=$page; $i++){
+                        $active = "";
+                        if ($i == 1){$active = "active";}
+                        echo '<li class="'.$active.'" id="p-'.$i.'" page="'.$i.'"><a>'.$i.'</a></li>';
+                    }
+                    $page_max = $i - 1; ?>
+                </ul>
+            </div>
         </div>
-
     </div>
+
+
+
 </div>
 
 <div id="action-info"></div>
@@ -157,6 +219,45 @@ if (!estConnecte())
 <?php include "includes/script_bas_page.php"; ?>
 
 <script>
+
+    $(".pagin").hide();
+    $('.page-1').show();
+
+    $(".pagination li").click(function () {
+        $(".pagination li").removeClass("active");
+        var page_max = <?php echo $page_max; ?>;
+        var mod = $(this).attr("mod");
+        var page = $(this).attr("page");
+        $(this).addClass("active");
+        $(".pagin").hide();
+        $(".page-" + page).show();
+    });
+
+    $("#inputCategorie").change(function () {
+       var id_categ = $(this).val();
+       console.log(id_categ);
+       if (id_categ == 1){
+           var input_complexe = $("#inputComplexe");
+           input_complexe.show();
+           var complexe = input_complexe.val();
+           if (complexe === "null")
+               $("#inputType").hide();
+           else
+               $("#inputType").show();
+       }else{
+           $("#inputComplexe").hide();
+           $("#inputType").hide();
+       }
+    });
+
+    $("#inputComplexe").change(function () {
+       var complexe = $(this).val();
+       if (complexe === "null")
+           $("#inputType").hide();
+       else
+           $("#inputType").show();
+    });
+
     $("#btn-new-tache").click(function () {
         var form = $(".form-tache");
         if (form.css("display") == "none") {
@@ -176,7 +277,10 @@ if (!estConnecte())
         e.preventDefault();
         var date = $("#inputDate").val();
         var descr = $("#inputDescr").val();
-        $.post("ajax/ajouter_tache.php", {date:date, descr:descr}, function (data) {
+        var type = $("#inputType").val();
+        var categorie = $("#inputCategorie").val();
+        var complexe = $("#inputComplexe").val();
+        $.post("ajax/ajouter_tache.php", {date:date, descr:descr, type:type, categorie:categorie, complexe:complexe}, function (data) {
             if (data === "ok") {
                 fadeAction("Vous avez bien ajouté cette tâche à la liste.", true);
                 location.reload();

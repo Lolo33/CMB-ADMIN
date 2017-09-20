@@ -10,4 +10,4 @@ use \CmbSdk\CmbApi;
 
 include 'CmbSdk/Autoloader.php';
 
-$CmbApi = new CmbApi("ZwbyKi5TGaXT5q9tflMO73iXxHyrE0XNuZJiRC61pmW49rCA3WeAfqx9NpilI2jx6iw=");
+$CmbApi = new CmbApi(CmbApi::MODE_LOCAL,"ZwbyKi5TGaXT5q9tflMO73iXxHyrE0XNuZJiRC61pmW49rCA3WeAfqx9NpilI2jx6iw=");

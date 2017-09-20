@@ -24,9 +24,11 @@ class ActionsPlanningTarifs extends Actions
     {
         $url_base = $this->url;
         if ($this->modeProduction === true)
-            $url = CmbApi::URL_PROD;
+            $url_base = CmbApi::URL_PROD;
+        elseif ($this->modeProduction === false)
+            $url_base = CmbApi::URL_TEST;
         else
-            $url = CmbApi::URL_TEST;
+            $url_base = CmbApi::URL_LOCAL;
         $this->url = $url . Routes::URL_TERRAINS . "/" . $id_terrain . Routes::URL_TARIFS;
         $rep = parent::GetAll();
         $this->url = $url_base;

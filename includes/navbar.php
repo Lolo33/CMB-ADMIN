@@ -12,10 +12,10 @@
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li <?php activeMenuIfContain("/accueil"); ?>>
+                <li class="<?php activeMenuIfContain("/accueil"); ?>">
                     <a href="accueil.php"><span class="glyphicon glyphicon-home"></span> Accueil<span class="sr-only">(current)</span></a>
                 </li>
-                <li <?php activeMenuIfContain("/ajout_complexe"); ?>>
+                <li class="<?php activeMenuIfContain("/ajout_complexe"); ?>">
                     <a href="ajout_complexe.php"><span class="glyphicon glyphicon-plus-sign"></span> Ajouter un complexe<span class="sr-only">(current)</span></a>
                 </li>
 
@@ -37,6 +37,7 @@
                 <div class="form-group">
                     <select name="complexe" class="form-control" id="select-complexe">
                         <?php
+                        $listeComplexes = array();
                         try {
                             $listeComplexes = $CmbApi->ComplexesAction->GetAll();
                             $countSelect = 0;

@@ -23,10 +23,12 @@ class ActionsPlagesHoraires extends Actions
     public function GetAllFromTerrain($id_terrain)
     {
         $url = $this->url;
-        if (!$this->modeProduction)
+        if ($this->modeProduction === true)
+            $url_base = CmbApi::URL_PROD;
+        elseif ($this->modeProduction === false)
             $url_base = CmbApi::URL_TEST;
         else
-            $url_base = CmbApi::URL_PROD;
+            $url_base = CmbApi::URL_LOCAL;
         $this->url = $url_base . Routes::URL_TERRAINS . "/" . $id_terrain . Routes::URL_HORAIRES;
         $rep = parent::GetAll();
         $this->url = $url;
